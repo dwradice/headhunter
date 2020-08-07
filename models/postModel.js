@@ -4,6 +4,7 @@ const postSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
+    required: true,
   },
   text: {
     type: String,
@@ -30,6 +31,14 @@ const postSchema = new mongoose.Schema({
       createdAt: {
         type: Date,
         default: Date.now,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      avatar: {
+        type: String,
+        required: true,
       },
     },
   ],

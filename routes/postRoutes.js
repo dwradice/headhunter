@@ -15,6 +15,10 @@ router
   .post(postController.createPost)
   .get(postController.getAllPosts);
 
+// ROUTE: /api/posts/user/:id
+//// GET: Retreives all posts from user
+router.route('/user/:id').get(postController.getUserPosts);
+
 // ROUTE: /api/posts/:id
 //// GET: Retreive post by ID
 //// DELETE: Delete post by ID
@@ -35,7 +39,8 @@ router
 //// PATCH: Add a comment to post
 router.route('/comment/:id').patch(postController.addComment);
 
-// ROUTEL /api/posts/comment/:id/:comment
+// ROUTE /api/posts/comment/:id/:comment
+//// DELETE: Delete comment from post
 router.route('/comment/:id/:comment').delete(postController.removeComment);
 
 module.exports = router;

@@ -10,9 +10,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token = null;
   if (req.header('x-auth-token')) {
     token = req.header('x-auth-token');
-  } else if (req.cookies.jwt) {
-    token = req.cookies.jwt;
   }
+
   if (token === null) {
     return next(
       new AppError('You need to be logged in to access this route', 401)

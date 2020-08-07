@@ -12,7 +12,7 @@ const profileSchema = new mongoose.Schema({
   location: {
     type: String,
   },
-  status: {
+  occupation: {
     type: String,
     required: true,
   },

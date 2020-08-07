@@ -22,7 +22,8 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    default: 'default-user.jpg',
+    default:
+      'https://headhunter-assets.s3.us-east-2.amazonaws.com/users/default-user.jpg',
   },
   createdAt: {
     type: Date,

@@ -1,7 +1,7 @@
 {
-  "name": "dev-connect",
+  "name": "headhunter",
   "version": "1.0.0",
-  "description": "social network for developers",
+  "description": "social network for professional job seekers",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,6 +12,7 @@
   "author": "Dylan Radice",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.727.1",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
@@ -23,6 +24,8 @@
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.25",
+    "multer": "^1.4.2",
+    "multer-sharp-s3": "^0.2.1",
     "validator": "^13.1.1",
     "xss-clean": "^0.1.1"
   },

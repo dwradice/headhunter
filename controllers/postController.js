@@ -1,4 +1,5 @@
 const Post = require('./../models/postModel');
+const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
@@ -8,16 +9,32 @@ exports.createPost = catchAsync(async (req, res) => {
     text: req.body.text,
   });
 
+  const popPost = await Post.findById(post.id).populate('user');
+
   res.status(201).json({
     status: 'success',
     data: {
-      post,
+      post: popPost,
     },
   });
 });
 
 exports.getAllPosts = catchAsync(async (req, res) => {
   const posts = await Post.find()
+    .populate('user', ['name', 'avatar'])
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    status: 'success',
+    results: posts.length,
+    data: {
+      posts,
+    },
+  });
+});
+
+exports.getUserPosts = catchAsync(async (req, res) => {
+  const posts = await Post.find({ user: req.params.id })
     .populate('user', ['name', 'avatar'])
     .sort({ createdAt: -1 });
 
@@ -61,7 +78,7 @@ exports.deletePost = catchAsync(async (req, res, next) => {
 
   await Post.findByIdAndDelete(req.params.id);
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success',
   });
 });
@@ -118,7 +135,12 @@ exports.addComment = catchAsync(async (req, res, next) => {
     return next(new AppError('Post not found.', 404));
   }
 
-  post.comments.push({ user: req.user.id, text: req.body.text });
+  post.comments.push({
+    user: req.user.id,
+    text: req.body.text,
+    name: req.user.name,
+    avatar: req.user.avatar,
+  });
 
   await post.save();
 
@@ -155,7 +177,7 @@ exports.removeComment = catchAsync(async (req, res, next) => {
 
   await post.save();
 
-  res.status(201).json({
+  res.status(200).json({
     status: 'success',
     data: {
       comments: post.comments,

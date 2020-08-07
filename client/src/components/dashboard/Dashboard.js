@@ -1,10 +1,77 @@
-import React from 'react';
+import React, { useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { getLoggedInProfile, deleteAccount } from './../../actions/profile';
+import { Link } from 'react-router-dom';
+import Spinner from './../layout/Spinner';
+import DashboardActions from './DashboardActions';
+import Experience from './Experience';
+import Education from './Education';
+import UserPhoto from './UserPhoto';
 
-const dashboard = props => {
-  return <div>Dashboard</div>;
+const Dashboard = ({
+  getLoggedInProfile,
+  deleteAccount,
+  auth: { user },
+  profile: { profile, loading },
+}) => {
+  useEffect(() => {
+    getLoggedInProfile();
+  }, [getLoggedInProfile]);
+
+  return loading && profile === null ? (
+    <Spinner />
+  ) : (
+    <Fragment>
+      <h1 className='large text-primary'>Dashboard</h1>
+      <p className='lead'>
+        <i className='fas fa-user'></i> Welcome {user && user.name}
+      </p>
+      <UserPhoto user={user} />
+      {profile !== null ? (
+        <Fragment>
+          <DashboardActions />
+          <Experience experience={profile.experience} />
+          <Education education={profile.education} />
+          <div className='my-2 dash-buttons'>
+            <Link to={`/profile/${user._id}`} className='btn btn-light my-1'>
+              <i className='fas fa-chevron-circle-up text-primary'></i> View
+              Profile
+            </Link>
+            <button
+              onClick={() => deleteAccount(profile._id)}
+              className='btn btn-danger'
+            >
+              <i className='fas fa-user-minus'></i> Delete My Account
+            </button>
+          </div>
+        </Fragment>
+      ) : (
+        <Fragment>
+          <h3 className='my-2'>
+            You have not yet setup a profile, please add some info
+          </h3>
+          <Link to='/create-profile' className='btn btn-primary my-1'>
+            Create Profile
+          </Link>
+        </Fragment>
+      )}
+    </Fragment>
+  );
 };
 
-dashboard.propTypes = {};
+Dashboard.propTypes = {
+  getLoggedInProfile: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  profile: PropTypes.object.isRequired,
+};
 
-export default dashboard;
+const mapStateToProps = state => ({
+  auth: state.auth,
+  profile: state.profile,
+  deleteAccount: PropTypes.func.isRequired,
+});
+
+export default connect(mapStateToProps, { getLoggedInProfile, deleteAccount })(
+  Dashboard
+);

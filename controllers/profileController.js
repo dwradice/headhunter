@@ -1,5 +1,6 @@
 const Profile = require('./../models/profileModel');
 const User = require('./../models/userModel');
+const Post = require('./../models/postModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
@@ -27,7 +28,7 @@ exports.createProfile = catchAsync(async (req, res, next) => {
   const {
     company,
     location,
-    status,
+    occupation,
     skills,
     bio,
     github,
@@ -40,12 +41,14 @@ exports.createProfile = catchAsync(async (req, res, next) => {
 
   const profileFields = {};
   profileFields.user = req.user.id;
-  if (company) profileFields.company = company;
-  if (location) profileFields.location = location;
-  if (status) profileFields.status = status;
-  if (bio) profileFields.bio = bio;
-  if (skills) {
-    profileFields.skills = skills.split(',').map(skill => skill.trim());
+  if (company !== null) profileFields.company = company;
+  if (location !== null) profileFields.location = location;
+  if (occupation !== null) profileFields.occupation = occupation;
+  if (bio !== null) profileFields.bio = bio;
+  if (skills !== null) {
+    Array.isArray(skills)
+      ? skills
+      : (profileFields.skills = skills.split(',').map(skill => skill.trim()));
   }
   profileFields.social = {};
   if (youtube) profileFields.social.youtube = youtube;
@@ -110,7 +113,7 @@ exports.deleteExperience = catchAsync(async (req, res, next) => {
 
   await profile.save();
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success',
     data: {
       profile,
@@ -168,7 +171,7 @@ exports.deleteEducation = catchAsync(async (req, res, next) => {
 
   await profile.save();
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success',
     data: {
       profile,
@@ -191,10 +194,9 @@ exports.getAllProfiles = catchAsync(async (req, res, next) => {
 
 // Retrieves Single Profile
 exports.getProfileByID = catchAsync(async (req, res, next) => {
-  const profile = await Profile.findById(req.params.id).populate('user', [
-    'name',
-    'avatar',
-  ]);
+  const profile = await Profile.findOne({
+    user: req.params.id,
+  }).populate('user', ['name', 'avatar']);
 
   if (!profile) {
     return next(new AppError('No profile found!', 404));
@@ -220,10 +222,11 @@ exports.deleteAccount = catchAsync(async (req, res, next) => {
     return next(new AppError('Not authorized to delete this profile', 403));
   }
 
+  await Post.deleteMany({ user: req.user.id });
   await Profile.findByIdAndDelete(req.params.id);
   await User.findByIdAndDelete(req.user.id);
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success',
   });
 });

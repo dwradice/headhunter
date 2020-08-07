@@ -44,8 +44,12 @@ router
   .get(profileController.getProfileByID)
   .delete(authController.protect, profileController.deleteAccount);
 
-// ROUTE: /api/profiles/me
+// ROUTE: /api/profiles/me/profile
 //// GET: Retrieve logged in user profile
-router.get('/me', authController.protect, profileController.getMyProfile);
+router.get(
+  '/me/profile',
+  authController.protect,
+  profileController.getMyProfile
+);
 
 module.exports = router;

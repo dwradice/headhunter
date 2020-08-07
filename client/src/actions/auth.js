@@ -8,7 +8,9 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
-  LOGOUT
+  LOGOUT,
+  CLEAR_PROFILE,
+  CLEAR_POST,
 } from './types';
 
 // Load User
@@ -93,5 +95,25 @@ export const login = (email, password) => async dispatch => {
 
 // Logout / Clear Profile
 export const logout = () => dispatch => {
-  dispatch({ type: LOGOUT})
-}
+  dispatch({ type: CLEAR_PROFILE });
+  dispatch({ type: CLEAR_POST });
+  dispatch({ type: LOGOUT });
+};
+
+export const uploadPhoto = file => async dispatch => {
+  try {
+    const form = new FormData();
+    form.append('avatar', file);
+    const res = await axios({
+      method: 'PATCH',
+      url: '/api/users',
+      data: form,
+    });
+
+    dispatch({
+      type: USER_LOADED,
+      payload: res.data.data.user,
+    });
+    dispatch(setAlert('Photo uploaded', 'success'));
+  } catch (err) {}
+};
