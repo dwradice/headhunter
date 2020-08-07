@@ -5,6 +5,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -46,6 +47,16 @@ app.use('/api/posts', postRouter);
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
+
+// Serve Static Assets
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static('client/build'));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
 
 // Error Handling
 app.use(globalErrorHandler);
